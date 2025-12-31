@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>무비서 - AI 영화 추천 서비스</title>
+  <meta name="description" content="시간만 알려주세요, 영화는 제가 고를게요. AI 기반 맞춤 영화 추천 서비스">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-primary: #ffffff;
+      --bg-secondary: #f8fafc;
+      --bg-card: #ffffff;
+      --accent: #1b369a;
+      --accent-light: #2544b8;
+      --accent-dark: #142870;
+      --text-primary: #1a1a2e;
+      --text-secondary: #4a5568;
+      --text-muted: #718096;
+      --border: #e2e8f0;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Floating Bot */
+    .floating-bot {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      width: 64px;
+      height: 64px;
+      z-index: 1000;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+      filter: drop-shadow(0 4px 12px rgba(27, 54, 154, 0.3));
+    }
+
+    .floating-bot:hover {
+      transform: scale(1.1);
+    }
+
+    .floating-bot svg {
+      width: 100%;
+      height: 100%;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0px);
+      }
+      50% {
+        transform: translateY(-8px);
+      }
+    }
+
+    /* Navigation */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 20px 0;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    nav .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-secondary);
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+
+    .nav-links a:hover {
+      color: var(--accent);
+    }
+
+    /* Hero Section */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 24px 80px;
+      background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 30% 20%, rgba(27, 54, 154, 0.05) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 800px;
+    }
+
+    .hero-logo {
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 32px;
+      filter: drop-shadow(0 4px 20px rgba(59, 130, 246, 0.3));
+    }
+
+    .hero-logo svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .hero h1 {
+      font-size: clamp(40px, 8vw, 72px);
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 24px;
+      color: var(--text-primary);
+    }
+
+    .hero h1 span {
+      color: var(--accent);
+    }
+
+    .hero-subtitle {
+      font-size: clamp(18px, 3vw, 24px);
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+      font-weight: 300;
+    }
+
+    .hero-description {
+      font-size: 16px;
+      color: var(--text-muted);
+      margin-bottom: 48px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 16px 32px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      transition: all 0.3s;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-light);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 40px rgba(27, 54, 154, 0.25);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Section Common */
+    section {
+      padding: 120px 24px;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+
+    .section-header h2 {
+      font-size: clamp(28px, 5vw, 40px);
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--text-primary);
+    }
+
+    .section-header p {
+      color: var(--text-secondary);
+      font-size: 18px;
+    }
+
+    /* Features Section */
+    .features {
+      background: var(--bg-primary);
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 32px;
+    }
+
+    .feature-card {
+      padding: 40px 32px;
+      background: var(--bg-primary);
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      transition: all 0.3s;
+    }
+
+    .feature-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(27, 54, 154, 0.08);
+    }
+
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      background: rgba(27, 54, 154, 0.08);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+
+    .feature-icon svg {
+      width: 24px;
+      height: 24px;
+      stroke: var(--accent);
+    }
+
+    .feature-card h3 {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--text-primary);
+    }
+
+    .feature-card p {
+      color: var(--text-secondary);
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    /* How It Works Section */
+    .how-it-works {
+      background: var(--bg-secondary);
+    }
+
+    .steps {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .step {
+      flex: 1;
+      min-width: 180px;
+      text-align: center;
+      position: relative;
+    }
+
+    .step-number {
+      width: 64px;
+      height: 64px;
+      background: var(--accent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 700;
+      margin: 0 auto 20px;
+      color: #ffffff;
+    }
+
+    .step h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--text-primary);
+    }
+
+    .step p {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    /* Video Section */
+    .video-section {
+      background: var(--bg-primary);
+    }
+
+    .video-container {
+      max-width: 900px;
+      margin: 0 auto;
+      aspect-ratio: 16 / 9;
+      background: var(--bg-secondary);
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .video-placeholder {
+      text-align: center;
+      color: var(--text-muted);
+    }
+
+    .video-placeholder svg {
+      width: 64px;
+      height: 64px;
+      stroke: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    /* Team Section */
+    .team {
+      background: var(--bg-secondary);
+    }
+
+    .team-grid {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+
+    .team-role {
+      text-align: center;
+      min-width: 100px;
+    }
+
+    .team-count {
+      width: 72px;
+      height: 72px;
+      background: var(--accent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: 700;
+      margin: 0 auto 12px;
+      color: #ffffff;
+    }
+
+    .team-role p {
+      color: var(--text-secondary);
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    /* CTA Section */
+    .cta {
+      background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+      text-align: center;
+    }
+
+    .cta h2 {
+      font-size: clamp(28px, 5vw, 40px);
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--text-primary);
+    }
+
+    .cta p {
+      color: var(--text-secondary);
+      font-size: 18px;
+      margin-bottom: 40px;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* Footer */
+    footer {
+      padding: 40px 24px;
+      border-top: 1px solid var(--border);
+      background: var(--bg-primary);
+    }
+
+    footer .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .footer-left .logo {
+      font-size: 20px;
+    }
+
+    .footer-left span {
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+    }
+
+    .footer-links a {
+      color: var(--text-muted);
+      font-size: 14px;
+      transition: color 0.3s;
+    }
+
+    .footer-links a:hover {
+      color: var(--accent);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+
+      section {
+        padding: 80px 24px;
+      }
+
+      .hero-logo {
+        width: 80px;
+        height: 80px;
+      }
+
+      .steps {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .step {
+        max-width: 300px;
+      }
+
+      .team-grid {
+        gap: 24px;
+      }
+
+      .team-role {
+        min-width: 80px;
+      }
+
+      footer .container {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .floating-bot {
+        width: 52px;
+        height: 52px;
+        bottom: 20px;
+        right: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Floating Bot -->
+  <div class="floating-bot" id="floatingBot" title="무비서 봇">
+    <svg width="150" height="150" viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <g clip-path="url(#clip0_float)">
+        <g filter="url(#filter0_f_float)">
+          <path d="M75 130C105.376 130 130 105.376 130 75C130 44.6243 105.376 20 75 20C44.6243 20 20 44.6243 20 75C20 105.376 44.6243 130 75 130Z" fill="#60A5FA" fill-opacity="0.4"/>
+        </g>
+        <path d="M75 125C102.614 125 125 102.614 125 75C125 47.3858 102.614 25 75 25C47.3858 25 25 47.3858 25 75C25 102.614 47.3858 125 75 125Z" fill="url(#paint0_linear_float)"/>
+        <path d="M60 71C63.3137 71 66 68.3137 66 65C66 61.6863 63.3137 59 60 59C56.6863 59 54 61.6863 54 65C54 68.3137 56.6863 71 60 71Z" fill="#111827"/>
+        <path d="M90 71C93.3137 71 96 68.3137 96 65C96 61.6863 93.3137 59 90 59C86.6863 59 84 61.6863 84 65C84 68.3137 86.6863 71 90 71Z" fill="#111827"/>
+        <path d="M55 80H41C39.3431 80 38 81.3431 38 83C38 84.6569 39.3431 86 41 86H55C56.6569 86 58 84.6569 58 83C58 81.3431 56.6569 80 55 80Z" fill="#F472B6" fill-opacity="0.8"/>
+        <path d="M109 80H95C93.3431 80 92 81.3431 92 83C92 84.6569 93.3431 86 95 86H109C110.657 86 112 84.6569 112 83C112 81.3431 110.657 80 109 80Z" fill="#F472B6" fill-opacity="0.8"/>
+      </g>
+      <defs>
+        <filter id="filter0_f_float" x="-4" y="-4" width="158" height="158" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+          <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+          <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+          <feGaussianBlur stdDeviation="12" result="effect1_foregroundBlur"/>
+        </filter>
+        <linearGradient id="paint0_linear_float" x1="20" y1="20" x2="130" y2="130" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#3B82F6"/>
+          <stop offset="0.5" stop-color="#2563EB"/>
+          <stop offset="1" stop-color="#06B6D4"/>
+        </linearGradient>
+        <clipPath id="clip0_float">
+          <rect width="150" height="150" fill="white"/>
+        </clipPath>
+      </defs>
+    </svg>
+  </div>
+
+  <!-- Navigation -->
+  <nav>
+    <div class="container">
+      <a href="#" class="logo">무비서</a>
+      <ul class="nav-links">
+        <li><a href="#features">기능</a></li>
+        <li><a href="#how-it-works">이용방법</a></li>
+        <li><a href="#team">팀 소개</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-logo">
+        <svg width="150" height="150" viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <g clip-path="url(#clip0_hero)">
+            <g filter="url(#filter0_f_hero)">
+              <path d="M75 130C105.376 130 130 105.376 130 75C130 44.6243 105.376 20 75 20C44.6243 20 20 44.6243 20 75C20 105.376 44.6243 130 75 130Z" fill="#60A5FA" fill-opacity="0.4"/>
+            </g>
+            <path d="M75 125C102.614 125 125 102.614 125 75C125 47.3858 102.614 25 75 25C47.3858 25 25 47.3858 25 75C25 102.614 47.3858 125 75 125Z" fill="url(#paint0_linear_hero)"/>
+            <path d="M60 71C63.3137 71 66 68.3137 66 65C66 61.6863 63.3137 59 60 59C56.6863 59 54 61.6863 54 65C54 68.3137 56.6863 71 60 71Z" fill="#111827"/>
+            <path d="M90 71C93.3137 71 96 68.3137 96 65C96 61.6863 93.3137 59 90 59C86.6863 59 84 61.6863 84 65C84 68.3137 86.6863 71 90 71Z" fill="#111827"/>
+            <path d="M55 80H41C39.3431 80 38 81.3431 38 83C38 84.6569 39.3431 86 41 86H55C56.6569 86 58 84.6569 58 83C58 81.3431 56.6569 80 55 80Z" fill="#F472B6" fill-opacity="0.8"/>
+            <path d="M109 80H95C93.3431 80 92 81.3431 92 83C92 84.6569 93.3431 86 95 86H109C110.657 86 112 84.6569 112 83C112 81.3431 110.657 80 109 80Z" fill="#F472B6" fill-opacity="0.8"/>
+          </g>
+          <defs>
+            <filter id="filter0_f_hero" x="-4" y="-4" width="158" height="158" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+              <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+              <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+              <feGaussianBlur stdDeviation="12" result="effect1_foregroundBlur"/>
+            </filter>
+            <linearGradient id="paint0_linear_hero" x1="20" y1="20" x2="130" y2="130" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#3B82F6"/>
+              <stop offset="0.5" stop-color="#2563EB"/>
+              <stop offset="1" stop-color="#06B6D4"/>
+            </linearGradient>
+            <clipPath id="clip0_hero">
+              <rect width="150" height="150" fill="white"/>
+            </clipPath>
+          </defs>
+        </svg>
+      </div>
+      <h1>시간만 알려주세요<br><span>영화는 제가 고를게요</span></h1>
+      <p class="hero-subtitle">무비서가 당신의 취향을 분석해 최적의 영화를 추천합니다</p>
+      <p class="hero-description">
+        이동시간에 맞춰, 구독 중인 OTT에서 바로 볼 수 있는 영화만 골라드립니다.
+      </p>
+      <div class="hero-buttons">
+        <a href="https://moviesir.cloud" target="_blank" class="btn btn-primary">서비스 체험하기</a>
+        <a href="#features" class="btn btn-secondary">더 알아보기</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features" id="features">
+    <div class="container">
+      <div class="section-header">
+        <h2>핵심 기능</h2>
+        <p>무비서만의 특별한 추천 시스템</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <h3>시간 기반 추천</h3>
+          <p>이동시간을 입력하면 러닝타임에 딱 맞는 영화만 추천해드립니다. 더 이상 시간 때문에 영화 선택을 포기하지 마세요.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+            </svg>
+          </div>
+          <h3>AI 개인화 추천</h3>
+          <p>SBERT와 LightGCN 기반 하이브리드 추천 시스템으로 당신의 취향을 정확하게 파악하고 맞춤 영화를 찾아드립니다.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+            </svg>
+          </div>
+          <h3>OTT 연동</h3>
+          <p>Netflix, Wavve, Watcha 등 구독 중인 플랫폼에서 바로 시청할 수 있는 영화만 보여드립니다.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+            </svg>
+          </div>
+          <h3>듀얼 트랙 추천</h3>
+          <p>개인 맞춤 추천과 인기작을 동시에 제공해 선택의 폭을 넓혀드립니다. 취향과 트렌드를 모두 잡으세요.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section class="how-it-works" id="how-it-works">
+    <div class="container">
+      <div class="section-header">
+        <h2>이용 방법</h2>
+        <p>5단계로 완성되는 맞춤 추천</p>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-number">1</div>
+          <h3>회원가입</h3>
+          <p>간편한 이메일 인증</p>
+        </div>
+        <div class="step">
+          <div class="step-number">2</div>
+          <h3>취향 조사</h3>
+          <p>좋아하는 영화 8~10개 선택</p>
+        </div>
+        <div class="step">
+          <div class="step-number">3</div>
+          <h3>조건 입력</h3>
+          <p>시간, 장르, 필터 설정</p>
+        </div>
+        <div class="step">
+          <div class="step-number">4</div>
+          <h3>AI 추천</h3>
+          <p>6개의 맞춤 영화 추천</p>
+        </div>
+        <div class="step">
+          <div class="step-number">5</div>
+          <h3>바로 시청</h3>
+          <p>OTT로 원클릭 이동</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Video Section -->
+  <section class="video-section" id="demo">
+    <div class="container">
+      <div class="section-header">
+        <h2>서비스 미리보기</h2>
+        <p>실제 추천 과정을 확인해보세요</p>
+      </div>
+      <div class="video-container">
+        <!-- YouTube 영상 임베드 시 아래 주석 해제 후 VIDEO_ID 교체 -->
+        <!-- <iframe width="100%" height="100%" src="https://www.youtube.com/embed/VIDEO_ID" frameborder="0" allowfullscreen></iframe> -->
+        <div class="video-placeholder">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <p>시연 영상 영역</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Team Section -->
+  <section class="team" id="team">
+    <div class="container">
+      <div class="section-header">
+        <h2>Team Movigation</h2>
+        <p>스나이퍼팩토리 카카오클라우드 AIaaS 마스터 클래스 2기 3팀</p>
+      </div>
+      <div class="team-grid">
+        <div class="team-role">
+          <div class="team-count">1</div>
+          <p>Database</p>
+        </div>
+        <div class="team-role">
+          <div class="team-count">1</div>
+          <p>AI / ML</p>
+        </div>
+        <div class="team-role">
+          <div class="team-count">1</div>
+          <p>Frontend</p>
+        </div>
+        <div class="team-role">
+          <div class="team-count">1</div>
+          <p>Backend</p>
+        </div>
+        <div class="team-role">
+          <div class="team-count">1</div>
+          <p>Cloud / Infra</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta">
+    <div class="container">
+      <h2>지금 바로 시작해보세요</h2>
+      <p>더 이상 뭘 볼지 고민하지 마세요. 무비서가 당신의 시간에 맞는 최적의 영화를 찾아드립니다.</p>
+      <a href="https://moviesir.cloud" target="_blank" class="btn btn-primary">무비서 체험하기</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-left">
+        <span class="logo">무비서</span>
+        <span>by Team Movigation</span>
+      </div>
+      <div class="footer-links">
+        <a href="https://github.com/movigation" target="_blank">GitHub</a>
+        <span style="color: var(--text-muted);">© 2025</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Smooth scroll for navigation links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+
+    // Navbar background on scroll
+    window.addEventListener('scroll', function() {
+      const nav = document.querySelector('nav');
+      if (window.scrollY > 50) {
+        nav.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.05)';
+      } else {
+        nav.style.boxShadow = 'none';
+      }
+    });
+
+    // Floating bot follows scroll with smooth animation
+    const floatingBot = document.getElementById('floatingBot');
+    let targetY = 0;
+    let currentY = 0;
+    
+    window.addEventListener('scroll', function() {
+      targetY = window.scrollY * 0.05;
+    });
+
+    function animateBot() {
+      currentY += (targetY - currentY) * 0.1;
+      floatingBot.style.transform = `translateY(${-currentY}px)`;
+      requestAnimationFrame(animateBot);
+    }
+    animateBot();
+
+    // Click bot to scroll to top
+    floatingBot.addEventListener('click', function() {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+  </script>
+</body>
+</html>
