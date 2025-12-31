@@ -20,7 +20,7 @@
       --bg-primary: #ffffff;
       --bg-secondary: #f8fafc;
       --bg-card: #ffffff;
-      --accent: #183494;
+      --accent: #2a4dc4;
       --accent-light: #2544b8;
       --accent-dark: #142870;
       --text-primary: #1a1a2e;
@@ -111,6 +111,42 @@
       height: 200%;
       background: radial-gradient(circle at 30% 20%, rgba(27, 54, 154, 0.05) 0%, transparent 50%);
       pointer-events: none;
+    }
+
+    /* Parallax Background Vehicles */
+    .parallax-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .parallax-vehicle {
+      position: absolute;
+      opacity: 0;
+      transition: opacity 0.8s ease;
+    }
+
+    .parallax-vehicle.active {
+      opacity: 0.15;
+    }
+
+    .parallax-airplane {
+      width: 600px;
+      height: auto;
+      top: 50%;
+      right: 5%;
+      transform: translateY(-50%);
+    }
+
+    /* Ensure content is above parallax */
+    nav, section, footer {
+      position: relative;
+      z-index: 1;
     }
 
     .hero-content {
@@ -500,6 +536,12 @@
   </style>
 </head>
 <body>
+  <!-- Parallax Background -->
+  <div class="parallax-bg">
+    <!-- Airplane -->
+    <img class="parallax-vehicle parallax-airplane active" src="airplane.jpg" alt="">
+  </div>
+
   <!-- Navigation -->
   <nav>
     <div class="container">
