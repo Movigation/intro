@@ -47,38 +47,6 @@
       padding: 0 24px;
     }
 
-    /* Floating Bot */
-    .floating-bot {
-      position: fixed;
-      bottom: 32px;
-      right: 32px;
-      width: 64px;
-      height: 64px;
-      z-index: 1000;
-      cursor: pointer;
-      transition: transform 0.3s ease;
-      filter: drop-shadow(0 4px 12px rgba(27, 54, 154, 0.3));
-    }
-
-    .floating-bot:hover {
-      transform: scale(1.1);
-    }
-
-    .floating-bot svg {
-      width: 100%;
-      height: 100%;
-      animation: float 3s ease-in-out infinite;
-    }
-
-    @keyframes float {
-      0%, 100% {
-        transform: translateY(0px);
-      }
-      50% {
-        transform: translateY(-8px);
-      }
-    }
-
     /* Navigation */
     nav {
       position: fixed;
@@ -259,8 +227,10 @@
 
     .features-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(2, 1fr);
       gap: 32px;
+      max-width: 900px;
+      margin: 0 auto;
     }
 
     .feature-card {
@@ -501,6 +471,10 @@
         height: 80px;
       }
 
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+
       .steps {
         flex-direction: column;
         align-items: center;
@@ -522,48 +496,10 @@
         flex-direction: column;
         text-align: center;
       }
-
-      .floating-bot {
-        width: 52px;
-        height: 52px;
-        bottom: 20px;
-        right: 20px;
-      }
     }
   </style>
 </head>
 <body>
-  <!-- Floating Bot -->
-  <div class="floating-bot" id="floatingBot" title="무비서 봇">
-    <svg width="150" height="150" viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <g clip-path="url(#clip0_float)">
-        <g filter="url(#filter0_f_float)">
-          <path d="M75 130C105.376 130 130 105.376 130 75C130 44.6243 105.376 20 75 20C44.6243 20 20 44.6243 20 75C20 105.376 44.6243 130 75 130Z" fill="#60A5FA" fill-opacity="0.4"/>
-        </g>
-        <path d="M75 125C102.614 125 125 102.614 125 75C125 47.3858 102.614 25 75 25C47.3858 25 25 47.3858 25 75C25 102.614 47.3858 125 75 125Z" fill="url(#paint0_linear_float)"/>
-        <path d="M60 71C63.3137 71 66 68.3137 66 65C66 61.6863 63.3137 59 60 59C56.6863 59 54 61.6863 54 65C54 68.3137 56.6863 71 60 71Z" fill="#111827"/>
-        <path d="M90 71C93.3137 71 96 68.3137 96 65C96 61.6863 93.3137 59 90 59C86.6863 59 84 61.6863 84 65C84 68.3137 86.6863 71 90 71Z" fill="#111827"/>
-        <path d="M55 80H41C39.3431 80 38 81.3431 38 83C38 84.6569 39.3431 86 41 86H55C56.6569 86 58 84.6569 58 83C58 81.3431 56.6569 80 55 80Z" fill="#F472B6" fill-opacity="0.8"/>
-        <path d="M109 80H95C93.3431 80 92 81.3431 92 83C92 84.6569 93.3431 86 95 86H109C110.657 86 112 84.6569 112 83C112 81.3431 110.657 80 109 80Z" fill="#F472B6" fill-opacity="0.8"/>
-      </g>
-      <defs>
-        <filter id="filter0_f_float" x="-4" y="-4" width="158" height="158" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-          <feFlood flood-opacity="0" result="BackgroundImageFix"/>
-          <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
-          <feGaussianBlur stdDeviation="12" result="effect1_foregroundBlur"/>
-        </filter>
-        <linearGradient id="paint0_linear_float" x1="20" y1="20" x2="130" y2="130" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#3B82F6"/>
-          <stop offset="0.5" stop-color="#2563EB"/>
-          <stop offset="1" stop-color="#06B6D4"/>
-        </linearGradient>
-        <clipPath id="clip0_float">
-          <rect width="150" height="150" fill="white"/>
-        </clipPath>
-      </defs>
-    </svg>
-  </div>
-
   <!-- Navigation -->
   <nav>
     <div class="container">
@@ -804,30 +740,6 @@
       } else {
         nav.style.boxShadow = 'none';
       }
-    });
-
-    // Floating bot follows scroll with smooth animation
-    const floatingBot = document.getElementById('floatingBot');
-    let targetY = 0;
-    let currentY = 0;
-    
-    window.addEventListener('scroll', function() {
-      targetY = window.scrollY * 0.05;
-    });
-
-    function animateBot() {
-      currentY += (targetY - currentY) * 0.1;
-      floatingBot.style.transform = `translateY(${-currentY}px)`;
-      requestAnimationFrame(animateBot);
-    }
-    animateBot();
-
-    // Click bot to scroll to top
-    floatingBot.addEventListener('click', function() {
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-      });
     });
   </script>
 </body>
