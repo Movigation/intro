@@ -23,8 +23,9 @@
         --bg-secondary: #1e293b;
         --bg-card: #1e293b;
         --bg-hover: #334155;
-        --accent: #3b82f6;
-        --accent-hover: #2563eb;
+        --accent: #2a4dc4;
+        --accent-light: #3b5fd9;
+        --accent-dark: #1e3a8a;
         --text-primary: #f8fafc;
         --text-secondary: #94a3b8;
         --text-muted: #64748b;
@@ -41,7 +42,6 @@
         min-height: 100vh;
       }
 
-      /* Layout */
       .layout {
         display: flex;
         min-height: 100vh;
@@ -100,7 +100,7 @@
       }
 
       .sidebar-nav a.active {
-        background: rgba(59, 130, 246, 0.1);
+        background: rgba(42, 77, 196, 0.1);
         color: var(--accent);
         border-right: 3px solid var(--accent);
       }
@@ -153,8 +153,8 @@
       }
 
       .header-user .plan-badge {
-        background: rgba(59, 130, 246, 0.2);
-        color: var(--accent);
+        background: rgba(42, 77, 196, 0.2);
+        color: var(--accent-light);
         padding: 4px 10px;
         border-radius: 12px;
         font-size: 12px;
@@ -284,7 +284,7 @@
       }
 
       .api-key-display .btn-copy:hover {
-        background: var(--accent-hover);
+        background: var(--accent-light);
       }
 
       /* Grid Layout */
@@ -308,32 +308,24 @@
         margin-bottom: 20px;
       }
 
-      .chart-placeholder {
+      .chart-container {
         height: 200px;
-        display: flex;
-        align-items: flex-end;
-        gap: 8px;
-        padding: 20px 0;
-      }
-
-      .chart-bar {
-        flex: 1;
-        background: linear-gradient(to top, var(--accent), rgba(59, 130, 246, 0.3));
-        border-radius: 4px 4px 0 0;
         position: relative;
-        transition: all 0.3s;
       }
 
-      .chart-bar:hover {
-        background: var(--accent);
+      .chart-canvas {
+        width: 100%;
+        height: 100%;
       }
 
-      .chart-bar::after {
-        content: attr(data-label);
-        position: absolute;
-        bottom: -24px;
-        left: 50%;
-        transform: translateX(-50%);
+      .chart-labels {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 12px;
+        padding: 0 10px;
+      }
+
+      .chart-labels span {
         font-size: 11px;
         color: var(--text-muted);
       }
@@ -380,12 +372,13 @@
       .action-item .icon {
         width: 32px;
         height: 32px;
-        background: rgba(59, 130, 246, 0.1);
+        background: rgba(42, 77, 196, 0.1);
         border-radius: 8px;
         display: flex;
         align-items: center;
         justify-content: center;
         color: var(--accent);
+        font-size: 14px;
       }
 
       /* Responsive */
@@ -424,25 +417,47 @@
           <ul class="sidebar-nav">
             <li>
               <a href="dashboard.html" class="active">
-                <span class="icon">📊</span>
+                <span class="icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7" rx="1"/>
+                    <rect x="14" y="3" width="7" height="7" rx="1"/>
+                    <rect x="3" y="14" width="7" height="7" rx="1"/>
+                    <rect x="14" y="14" width="7" height="7" rx="1"/>
+                  </svg>
+                </span>
                 대시보드
               </a>
             </li>
             <li>
               <a href="api-keys.html">
-                <span class="icon">🔑</span>
+                <span class="icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
+                  </svg>
+                </span>
                 API Key 관리
               </a>
             </li>
             <li>
               <a href="usage.html">
-                <span class="icon">📈</span>
+                <span class="icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 3v18h18"/>
+                    <path d="M18 17V9"/>
+                    <path d="M13 17V5"/>
+                    <path d="M8 17v-3"/>
+                  </svg>
+                </span>
                 사용량 리포트
               </a>
             </li>
             <li>
               <a href="playground.html">
-                <span class="icon">🧪</span>
+                <span class="icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                  </svg>
+                </span>
                 API Playground
               </a>
             </li>
@@ -452,19 +467,38 @@
           <ul class="sidebar-nav">
             <li>
               <a href="#">
-                <span class="icon">⚙️</span>
+                <span class="icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3"/>
+                    <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                  </svg>
+                </span>
                 계정 설정
               </a>
             </li>
             <li>
               <a href="#">
-                <span class="icon">📄</span>
+                <span class="icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <path d="M14 2v6h6"/>
+                    <path d="M16 13H8"/>
+                    <path d="M16 17H8"/>
+                    <path d="M10 9H8"/>
+                  </svg>
+                </span>
                 API 문서
               </a>
             </li>
             <li>
               <a href="#" id="logoutBtn">
-                <span class="icon">🚪</span>
+                <span class="icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                    <polyline points="16 17 21 12 16 7"/>
+                    <line x1="21" y1="12" x2="9" y2="12"/>
+                  </svg>
+                </span>
                 로그아웃
               </a>
             </li>
@@ -491,22 +525,22 @@
           <div class="stats-grid">
             <div class="stat-card">
               <div class="label">이번 달 API 호출</div>
-              <div class="value">12,847</div>
-              <div class="change up">↑ 23% 전월 대비</div>
+              <div class="value" id="monthlyCount">0</div>
+              <div class="change up">+23% 전월 대비</div>
             </div>
             <div class="stat-card">
               <div class="label">오늘 호출</div>
-              <div class="value">1,234</div>
-              <div class="change up">↑ 12% 어제 대비</div>
+              <div class="value" id="todayCount">0</div>
+              <div class="change up">+12% 어제 대비</div>
             </div>
             <div class="stat-card">
               <div class="label">평균 응답 시간</div>
-              <div class="value">87<span style="font-size: 14px; color: var(--text-muted);">ms</span></div>
-              <div class="change down">↓ 5ms 개선</div>
+              <div class="value"><span id="avgResponse">0</span><span style="font-size: 14px; color: var(--text-muted);">ms</span></div>
+              <div class="change down">-5ms 개선</div>
             </div>
             <div class="stat-card">
               <div class="label">남은 호출량</div>
-              <div class="value">37,153</div>
+              <div class="value" id="remainingCount">0</div>
               <div class="change" style="color: var(--text-muted);">/ 50,000</div>
             </div>
           </div>
@@ -527,14 +561,17 @@
           <div class="grid-2">
             <div class="chart-card">
               <h3>최근 7일 API 호출량</h3>
-              <div class="chart-placeholder">
-                <div class="chart-bar" style="height: 60%;" data-label="월"></div>
-                <div class="chart-bar" style="height: 75%;" data-label="화"></div>
-                <div class="chart-bar" style="height: 45%;" data-label="수"></div>
-                <div class="chart-bar" style="height: 90%;" data-label="목"></div>
-                <div class="chart-bar" style="height: 80%;" data-label="금"></div>
-                <div class="chart-bar" style="height: 40%;" data-label="토"></div>
-                <div class="chart-bar" style="height: 100%;" data-label="오늘"></div>
+              <div class="chart-container">
+                <canvas id="chartCanvas" class="chart-canvas"></canvas>
+              </div>
+              <div class="chart-labels">
+                <span>월</span>
+                <span>화</span>
+                <span>수</span>
+                <span>목</span>
+                <span>금</span>
+                <span>토</span>
+                <span>오늘</span>
               </div>
             </div>
 
@@ -542,19 +579,36 @@
               <h3>빠른 실행</h3>
               <div class="action-list">
                 <a href="playground.html" class="action-item">
-                  <div class="icon">🧪</div>
+                  <div class="icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                    </svg>
+                  </div>
                   <span>API 테스트하기</span>
                 </a>
                 <a href="api-keys.html" class="action-item">
-                  <div class="icon">🔑</div>
+                  <div class="icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
+                    </svg>
+                  </div>
                   <span>새 API Key 발급</span>
                 </a>
                 <a href="#" class="action-item">
-                  <div class="icon">📄</div>
+                  <div class="icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                      <path d="M14 2v6h6"/>
+                    </svg>
+                  </div>
                   <span>API 문서 보기</span>
                 </a>
                 <a href="#" class="action-item">
-                  <div class="icon">💬</div>
+                  <div class="icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                  </div>
                   <span>기술 지원 문의</span>
                 </a>
               </div>
@@ -574,6 +628,105 @@
         document.getElementById('userEmail').textContent = user.email;
         document.getElementById('userAvatar').textContent = user.company.charAt(0);
       }
+
+      // Animate counters
+      function animateCounter(id, target, duration = 1500) {
+        const el = document.getElementById(id);
+        const start = 0;
+        const startTime = performance.now();
+
+        function update(currentTime) {
+          const elapsed = currentTime - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          const current = Math.floor(start + (target - start) * eased);
+          el.textContent = current.toLocaleString();
+
+          if (progress < 1) {
+            requestAnimationFrame(update);
+          }
+        }
+        requestAnimationFrame(update);
+      }
+
+      // Start counter animations
+      setTimeout(() => {
+        animateCounter('monthlyCount', 12847);
+        animateCounter('todayCount', 1234);
+        animateCounter('avgResponse', 87);
+        animateCounter('remainingCount', 37153);
+      }, 300);
+
+      // Draw animated chart
+      function drawChart() {
+        const canvas = document.getElementById('chartCanvas');
+        const ctx = canvas.getContext('2d');
+        const dpr = window.devicePixelRatio || 1;
+
+        canvas.width = canvas.offsetWidth * dpr;
+        canvas.height = canvas.offsetHeight * dpr;
+        ctx.scale(dpr, dpr);
+
+        const width = canvas.offsetWidth;
+        const height = canvas.offsetHeight;
+        const data = [1234, 1567, 890, 2100, 1800, 1400, 1507];
+        const maxValue = Math.max(...data) * 1.2;
+        const barWidth = (width - 80) / data.length;
+        const gap = 12;
+
+        let animationProgress = 0;
+
+        function animate() {
+          ctx.clearRect(0, 0, width, height);
+
+          // Draw grid lines
+          ctx.strokeStyle = '#334155';
+          ctx.lineWidth = 1;
+          for (let i = 0; i <= 4; i++) {
+            const y = height - (height * i / 4) - 10;
+            ctx.beginPath();
+            ctx.moveTo(40, y);
+            ctx.lineTo(width - 20, y);
+            ctx.stroke();
+          }
+
+          // Draw bars
+          data.forEach((value, index) => {
+            const barHeight = (value / maxValue) * (height - 30) * animationProgress;
+            const x = 50 + index * barWidth;
+            const y = height - barHeight - 10;
+
+            // Gradient
+            const gradient = ctx.createLinearGradient(x, y, x, height - 10);
+            gradient.addColorStop(0, '#3b5fd9');
+            gradient.addColorStop(1, 'rgba(42, 77, 196, 0.3)');
+
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.roundRect(x + gap/2, y, barWidth - gap, barHeight, [4, 4, 0, 0]);
+            ctx.fill();
+
+            // Value label
+            if (animationProgress > 0.8) {
+              ctx.fillStyle = '#94a3b8';
+              ctx.font = '11px Noto Sans KR';
+              ctx.textAlign = 'center';
+              ctx.fillText(value.toLocaleString(), x + barWidth/2, y - 8);
+            }
+          });
+
+          if (animationProgress < 1) {
+            animationProgress += 0.03;
+            requestAnimationFrame(animate);
+          }
+        }
+
+        setTimeout(animate, 500);
+      }
+
+      // Initialize chart
+      drawChart();
+      window.addEventListener('resize', drawChart);
 
       // Copy API Key
       function copyApiKey() {

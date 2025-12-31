@@ -22,8 +22,9 @@
         --bg-primary: #0f172a;
         --bg-secondary: #1e293b;
         --bg-card: #1e293b;
-        --accent: #3b82f6;
-        --accent-hover: #2563eb;
+        --accent: #2a4dc4;
+        --accent-light: #3b5fd9;
+        --accent-dark: #1e3a8a;
         --text-primary: #f8fafc;
         --text-secondary: #94a3b8;
         --text-muted: #64748b;
@@ -110,7 +111,7 @@
       .form-group input:focus {
         outline: none;
         border-color: var(--accent);
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        box-shadow: 0 0 0 3px rgba(42, 77, 196, 0.2);
       }
 
       .form-group input::placeholder {
@@ -147,7 +148,7 @@
       }
 
       .forgot-password:hover {
-        color: var(--accent-hover);
+        color: var(--accent-light);
         text-decoration: underline;
       }
 
@@ -166,7 +167,7 @@
       }
 
       .btn-login:hover {
-        background: var(--accent-hover);
+        background: var(--accent-light);
       }
 
       .btn-login:active {
@@ -228,15 +229,14 @@
         color: var(--text-secondary);
       }
 
-      /* Demo notice */
       .demo-notice {
-        background: rgba(59, 130, 246, 0.1);
-        border: 1px solid rgba(59, 130, 246, 0.3);
+        background: rgba(42, 77, 196, 0.1);
+        border: 1px solid rgba(42, 77, 196, 0.3);
         border-radius: 8px;
         padding: 12px 16px;
         margin-bottom: 20px;
         font-size: 13px;
-        color: var(--accent);
+        color: var(--accent-light);
         text-align: center;
       }
     </style>
@@ -310,16 +310,12 @@
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
 
-        // Demo login check
         if (email === 'demo@example.com' && password === 'demo1234') {
-          // Store demo session
           localStorage.setItem('b2b_user', JSON.stringify({
             email: email,
             company: '데모 기업',
             plan: 'Pro'
           }));
-
-          // Redirect to dashboard
           window.location.href = 'dashboard.html';
         } else {
           alert('이메일 또는 비밀번호가 올바르지 않습니다.\n\n데모 계정: demo@example.com / demo1234');
