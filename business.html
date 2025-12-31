@@ -109,6 +109,32 @@
         color: var(--accent);
       }
 
+      .nav-left {
+        display: flex;
+        align-items: center;
+        gap: 48px;
+      }
+
+      .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .nav-action {
+        color: var(--text-secondary);
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.2s;
+      }
+
+      .nav-action:hover {
+        color: var(--text-primary);
+        background: var(--bg-light);
+      }
+
       .nav-cta {
         background: var(--accent);
         color: white;
@@ -117,6 +143,7 @@
         font-size: 14px;
         font-weight: 600;
         transition: all 0.3s;
+        margin-left: 8px;
       }
 
       .nav-cta:hover {
@@ -730,6 +757,19 @@
           display: none;
         }
 
+        .nav-left {
+          gap: 0;
+        }
+
+        .nav-action {
+          display: none;
+        }
+
+        .nav-cta {
+          padding: 8px 14px;
+          font-size: 13px;
+        }
+
         section {
           padding: 60px 24px;
         }
@@ -754,14 +794,20 @@
     <!-- Navigation -->
     <nav>
       <div class="container">
-        <a href="index.html" class="logo">무비서 <span>API</span></a>
-        <ul class="nav-links">
-          <li><a href="#features">특징</a></li>
-          <li><a href="#api">API 문서</a></li>
-          <li><a href="#pricing">가격</a></li>
-          <li><a href="#use-cases">활용 사례</a></li>
-        </ul>
-        <a href="#contact" class="nav-cta">도입 문의</a>
+        <div class="nav-left">
+          <a href="index.html" class="logo">무비서 <span>API</span></a>
+          <ul class="nav-links">
+            <li><a href="#features">특징</a></li>
+            <li><a href="#api">API 문서</a></li>
+            <li><a href="#pricing">가격</a></li>
+            <li><a href="#use-cases">활용 사례</a></li>
+          </ul>
+        </div>
+        <div class="nav-right">
+          <a href="#api" class="nav-action">기술문서</a>
+          <a href="b2b/login.html" class="nav-action">콘솔</a>
+          <a href="#contact" class="nav-cta">도입 문의</a>
+        </div>
       </div>
     </nav>
 
