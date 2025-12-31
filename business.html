@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>무비서 API - AI 영화 추천 API for Business</title>
+    <meta
+      name="description"
+      content="AI 기반 영화 추천 API를 당신의 서비스에 연동하세요. 시간 맞춤 추천, 간편한 REST API"
+    />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --bg-primary: #ffffff;
+        --bg-secondary: #f8fafc;
+        --bg-dark: #0f172a;
+        --bg-code: #1e293b;
+        --accent: #2a4dc4;
+        --accent-light: #3b5fd9;
+        --accent-dark: #1e3a8a;
+        --text-primary: #1a1a2e;
+        --text-secondary: #4a5568;
+        --text-muted: #718096;
+        --border: #e2e8f0;
+        --success: #10b981;
+        --warning: #f59e0b;
+      }
+
+      body {
+        font-family: "Noto Sans KR", sans-serif;
+        background-color: var(--bg-primary);
+        color: var(--text-primary);
+        line-height: 1.6;
+      }
+
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
+
+      code, .code {
+        font-family: "JetBrains Mono", monospace;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+
+      /* Navigation */
+      nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        padding: 16px 0;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--border);
+      }
+
+      nav .container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--accent);
+      }
+
+      .logo span {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text-muted);
+        margin-left: 8px;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 32px;
+        list-style: none;
+      }
+
+      .nav-links a {
+        color: var(--text-secondary);
+        font-size: 14px;
+        font-weight: 500;
+        transition: color 0.3s;
+      }
+
+      .nav-links a:hover {
+        color: var(--accent);
+      }
+
+      .nav-cta {
+        background: var(--accent);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        transition: all 0.3s;
+      }
+
+      .nav-cta:hover {
+        background: var(--accent-light);
+      }
+
+      /* Hero Section */
+      .hero {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        padding: 120px 24px 80px;
+        background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .hero::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.5;
+      }
+
+      .hero .container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 60px;
+        align-items: center;
+        position: relative;
+        z-index: 1;
+      }
+
+      .hero-content {
+        color: white;
+      }
+
+      .hero-badge {
+        display: inline-block;
+        padding: 6px 16px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 50px;
+        font-size: 13px;
+        margin-bottom: 24px;
+      }
+
+      .hero h1 {
+        font-size: 48px;
+        font-weight: 700;
+        line-height: 1.2;
+        margin-bottom: 20px;
+      }
+
+      .hero h1 span {
+        background: linear-gradient(90deg, #60a5fa, #a78bfa);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .hero-subtitle {
+        font-size: 18px;
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 32px;
+        line-height: 1.7;
+      }
+
+      .hero-buttons {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 40px;
+      }
+
+      .btn {
+        padding: 16px 32px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        transition: all 0.3s;
+        cursor: pointer;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .btn-primary {
+        background: white;
+        color: var(--accent);
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 40px rgba(255, 255, 255, 0.2);
+      }
+
+      .btn-secondary {
+        background: transparent;
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+      }
+
+      .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      /* Code Preview */
+      .code-preview {
+        background: var(--bg-code);
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 40px 80px rgba(0, 0, 0, 0.3);
+      }
+
+      .code-header {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+
+      .code-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+      }
+
+      .code-dot.red { background: #ef4444; }
+      .code-dot.yellow { background: #f59e0b; }
+      .code-dot.green { background: #10b981; }
+
+      .code-content {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13px;
+        color: #e2e8f0;
+        line-height: 1.8;
+        overflow-x: auto;
+      }
+
+      .code-content .comment { color: #64748b; }
+      .code-content .keyword { color: #f472b6; }
+      .code-content .string { color: #34d399; }
+      .code-content .property { color: #60a5fa; }
+      .code-content .number { color: #fbbf24; }
+
+      /* Section Common */
+      section {
+        padding: 100px 24px;
+      }
+
+      .section-header {
+        text-align: center;
+        margin-bottom: 60px;
+      }
+
+      .section-label {
+        display: inline-block;
+        padding: 6px 12px;
+        background: rgba(42, 77, 196, 0.1);
+        border-radius: 50px;
+        font-size: 13px;
+        color: var(--accent);
+        margin-bottom: 16px;
+        font-weight: 500;
+      }
+
+      .section-header h2 {
+        font-size: 36px;
+        font-weight: 700;
+        margin-bottom: 16px;
+        color: var(--text-primary);
+      }
+
+      .section-header p {
+        color: var(--text-secondary);
+        font-size: 18px;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      /* Features Section */
+      .features {
+        background: var(--bg-secondary);
+      }
+
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 32px;
+      }
+
+      .feature-card {
+        padding: 40px 32px;
+        background: var(--bg-primary);
+        border-radius: 16px;
+        border: 1px solid var(--border);
+        transition: all 0.3s;
+        text-align: center;
+      }
+
+      .feature-card:hover {
+        border-color: var(--accent);
+        transform: translateY(-4px);
+        box-shadow: 0 20px 40px rgba(42, 77, 196, 0.1);
+      }
+
+      .feature-icon {
+        width: 64px;
+        height: 64px;
+        background: rgba(42, 77, 196, 0.1);
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 24px;
+      }
+
+      .feature-icon svg {
+        width: 32px;
+        height: 32px;
+        stroke: var(--accent);
+      }
+
+      .feature-card h3 {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 12px;
+        color: var(--text-primary);
+      }
+
+      .feature-card p {
+        color: var(--text-secondary);
+        font-size: 15px;
+        line-height: 1.7;
+      }
+
+      /* API Example Section */
+      .api-example {
+        background: var(--bg-primary);
+      }
+
+      .api-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        align-items: start;
+      }
+
+      .api-info h3 {
+        font-size: 24px;
+        font-weight: 600;
+        margin-bottom: 16px;
+      }
+
+      .api-info p {
+        color: var(--text-secondary);
+        margin-bottom: 24px;
+        line-height: 1.7;
+      }
+
+      .api-features {
+        list-style: none;
+      }
+
+      .api-features li {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 0;
+        color: var(--text-secondary);
+      }
+
+      .api-features li svg {
+        width: 20px;
+        height: 20px;
+        stroke: var(--success);
+        flex-shrink: 0;
+      }
+
+      .api-code-block {
+        background: var(--bg-code);
+        border-radius: 12px;
+        overflow: hidden;
+      }
+
+      .api-code-tabs {
+        display: flex;
+        background: rgba(0, 0, 0, 0.2);
+      }
+
+      .api-code-tab {
+        padding: 12px 20px;
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        border: none;
+        background: none;
+        font-family: inherit;
+      }
+
+      .api-code-tab.active {
+        color: white;
+        background: var(--bg-code);
+      }
+
+      .api-code-content {
+        padding: 24px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13px;
+        color: #e2e8f0;
+        line-height: 1.8;
+        overflow-x: auto;
+      }
+
+      /* Pricing Section */
+      .pricing {
+        background: var(--bg-secondary);
+      }
+
+      .pricing-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 32px;
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+
+      .pricing-card {
+        background: var(--bg-primary);
+        border-radius: 16px;
+        padding: 40px 32px;
+        border: 1px solid var(--border);
+        position: relative;
+        transition: all 0.3s;
+      }
+
+      .pricing-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+      }
+
+      .pricing-card.featured {
+        border-color: var(--accent);
+        box-shadow: 0 20px 40px rgba(42, 77, 196, 0.15);
+      }
+
+      .pricing-card.featured::before {
+        content: "추천";
+        position: absolute;
+        top: -12px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--accent);
+        color: white;
+        padding: 4px 16px;
+        border-radius: 50px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .pricing-name {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+
+      .pricing-desc {
+        color: var(--text-muted);
+        font-size: 14px;
+        margin-bottom: 24px;
+      }
+
+      .pricing-price {
+        margin-bottom: 24px;
+      }
+
+      .pricing-price .amount {
+        font-size: 40px;
+        font-weight: 700;
+        color: var(--text-primary);
+      }
+
+      .pricing-price .period {
+        color: var(--text-muted);
+        font-size: 14px;
+      }
+
+      .pricing-features {
+        list-style: none;
+        margin-bottom: 32px;
+      }
+
+      .pricing-features li {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 0;
+        color: var(--text-secondary);
+        font-size: 14px;
+      }
+
+      .pricing-features li svg {
+        width: 18px;
+        height: 18px;
+        stroke: var(--success);
+        flex-shrink: 0;
+      }
+
+      .pricing-btn {
+        width: 100%;
+        padding: 14px;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        border: none;
+      }
+
+      .pricing-btn.primary {
+        background: var(--accent);
+        color: white;
+      }
+
+      .pricing-btn.primary:hover {
+        background: var(--accent-light);
+      }
+
+      .pricing-btn.secondary {
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+        border: 1px solid var(--border);
+      }
+
+      .pricing-btn.secondary:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      /* Use Cases Section */
+      .use-cases {
+        background: var(--bg-primary);
+      }
+
+      .use-cases-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 32px;
+        max-width: 900px;
+        margin: 0 auto;
+      }
+
+      .use-case-card {
+        padding: 32px;
+        background: var(--bg-secondary);
+        border-radius: 16px;
+        display: flex;
+        gap: 20px;
+      }
+
+      .use-case-icon {
+        width: 48px;
+        height: 48px;
+        background: var(--accent);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .use-case-icon svg {
+        width: 24px;
+        height: 24px;
+        stroke: white;
+      }
+
+      .use-case-content h3 {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+
+      .use-case-content p {
+        color: var(--text-secondary);
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      /* Contact Section */
+      .contact {
+        background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+        text-align: center;
+        color: white;
+      }
+
+      .contact h2 {
+        font-size: 36px;
+        font-weight: 700;
+        margin-bottom: 16px;
+      }
+
+      .contact p {
+        font-size: 18px;
+        margin-bottom: 32px;
+        opacity: 0.9;
+      }
+
+      .contact-info {
+        display: flex;
+        justify-content: center;
+        gap: 40px;
+        flex-wrap: wrap;
+      }
+
+      .contact-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 16px;
+      }
+
+      .contact-item svg {
+        width: 24px;
+        height: 24px;
+      }
+
+      /* Footer */
+      footer {
+        padding: 40px 24px;
+        border-top: 1px solid var(--border);
+        background: var(--bg-primary);
+      }
+
+      footer .container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+
+      .footer-left {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .footer-left .logo {
+        font-size: 20px;
+      }
+
+      .footer-left span {
+        color: var(--text-muted);
+        font-size: 14px;
+      }
+
+      .footer-links {
+        display: flex;
+        gap: 24px;
+      }
+
+      .footer-links a {
+        color: var(--text-muted);
+        font-size: 14px;
+        transition: color 0.3s;
+      }
+
+      .footer-links a:hover {
+        color: var(--accent);
+      }
+
+      /* Responsive */
+      @media (max-width: 968px) {
+        .hero .container {
+          grid-template-columns: 1fr;
+        }
+
+        .code-preview {
+          display: none;
+        }
+
+        .hero h1 {
+          font-size: 36px;
+        }
+
+        .features-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .api-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .pricing-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .use-cases-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .nav-links {
+          display: none;
+        }
+
+        section {
+          padding: 60px 24px;
+        }
+
+        .section-header h2 {
+          font-size: 28px;
+        }
+
+        footer .container {
+          flex-direction: column;
+          text-align: center;
+        }
+
+        .contact-info {
+          flex-direction: column;
+          gap: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav>
+      <div class="container">
+        <a href="index.html" class="logo">무비서 <span>API</span></a>
+        <ul class="nav-links">
+          <li><a href="#features">특징</a></li>
+          <li><a href="#api">API 문서</a></li>
+          <li><a href="#pricing">가격</a></li>
+          <li><a href="#use-cases">활용 사례</a></li>
+        </ul>
+        <a href="#contact" class="nav-cta">도입 문의</a>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="container">
+        <div class="hero-content">
+          <div class="hero-badge">B2B API Service</div>
+          <h1>AI 영화 추천을<br /><span>당신의 서비스에</span></h1>
+          <p class="hero-subtitle">
+            SBERT + LightGCN 하이브리드 추천 엔진을 REST API로 간편하게 연동하세요.
+            시간 맞춤 추천, OTT 필터링까지 한 번의 호출로.
+          </p>
+          <div class="hero-buttons">
+            <a href="#pricing" class="btn btn-primary">
+              요금제 보기
+              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+              </svg>
+            </a>
+            <a href="#api" class="btn btn-secondary">API 문서</a>
+          </div>
+        </div>
+        <div class="code-preview">
+          <div class="code-header">
+            <div class="code-dot red"></div>
+            <div class="code-dot yellow"></div>
+            <div class="code-dot green"></div>
+          </div>
+          <div class="code-content">
+            <span class="comment">// 영화 추천 요청</span><br />
+            <span class="keyword">POST</span> /api/b2b/recommend<br /><br />
+            {<br />
+            &nbsp;&nbsp;<span class="property">"api_key"</span>: <span class="string">"your_api_key"</span>,<br />
+            &nbsp;&nbsp;<span class="property">"liked_movies"</span>: [<span class="number">550</span>, <span class="number">27205</span>],<br />
+            &nbsp;&nbsp;<span class="property">"runtime_limit"</span>: <span class="number">180</span>,<br />
+            &nbsp;&nbsp;<span class="property">"genres"</span>: [<span class="string">"액션"</span>, <span class="string">"SF"</span>]<br />
+            }<br /><br />
+            <span class="comment">// 응답: 맞춤 영화 추천</span><br />
+            {<br />
+            &nbsp;&nbsp;<span class="property">"track_a"</span>: { <span class="property">"movies"</span>: [...] },<br />
+            &nbsp;&nbsp;<span class="property">"track_b"</span>: { <span class="property">"movies"</span>: [...] }<br />
+            }
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-label">API 특징</span>
+          <h2>왜 무비서 API인가?</h2>
+          <p>검증된 AI 추천 엔진을 쉽고 빠르게 연동하세요</p>
+        </div>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+              </svg>
+            </div>
+            <h3>빠른 응답 속도</h3>
+            <p>평균 300ms 이내 응답. 사용자 경험을 해치지 않는 실시간 추천을 제공합니다.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+              </svg>
+            </div>
+            <h3>하이브리드 AI</h3>
+            <p>SBERT 콘텐츠 분석 + LightGCN 협업 필터링으로 정확한 개인화 추천을 제공합니다.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <h3>시간 맞춤 추천</h3>
+            <p>사용자의 가용 시간에 맞는 영화 조합을 자동으로 계산하여 추천합니다.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"></path>
+              </svg>
+            </div>
+            <h3>10,000+ 영화 DB</h3>
+            <p>TMDB 기반 풍부한 메타데이터와 한국어 정보를 포함한 영화 데이터베이스.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+              </svg>
+            </div>
+            <h3>안정적인 서비스</h3>
+            <p>99.9% 가동률 보장. 클라우드 기반 인프라로 안정적인 서비스를 제공합니다.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+              </svg>
+            </div>
+            <h3>간편한 연동</h3>
+            <p>RESTful API로 어떤 플랫폼에서도 쉽게 연동. 상세한 문서와 예제 코드 제공.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- API Example Section -->
+    <section class="api-example" id="api">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-label">API 문서</span>
+          <h2>간단한 연동, 강력한 추천</h2>
+          <p>단 한 번의 API 호출로 AI 기반 영화 추천을 받아보세요</p>
+        </div>
+        <div class="api-grid">
+          <div class="api-info">
+            <h3>영화 추천 API</h3>
+            <p>
+              사용자가 좋아하는 영화 ID와 가용 시간을 전달하면,
+              AI가 분석하여 최적의 영화 조합을 추천합니다.
+            </p>
+            <ul class="api-features">
+              <li>
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                Track A: 선호 장르 맞춤 추천
+              </li>
+              <li>
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                Track B: 장르 확장 다양성 추천
+              </li>
+              <li>
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                런타임 합계 자동 계산
+              </li>
+              <li>
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                포스터, 줄거리 등 메타데이터 포함
+              </li>
+              <li>
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                성인물 필터링 옵션
+              </li>
+            </ul>
+          </div>
+          <div class="api-code-block">
+            <div class="api-code-tabs">
+              <button class="api-code-tab active">Request</button>
+              <button class="api-code-tab">Response</button>
+            </div>
+            <div class="api-code-content">
+<span class="keyword">POST</span> https://api.moviesir.cloud/b2b/recommend
+<span class="keyword">Content-Type:</span> application/json
+<span class="keyword">X-API-Key:</span> your_api_key
+
+{
+  <span class="property">"liked_movies"</span>: [<span class="number">550</span>, <span class="number">27205</span>, <span class="number">157336</span>],
+  <span class="property">"runtime_limit"</span>: <span class="number">360</span>,
+  <span class="property">"genres"</span>: [<span class="string">"액션"</span>],
+  <span class="property">"exclude_adult"</span>: <span class="keyword">true</span>
+}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing" id="pricing">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-label">요금제</span>
+          <h2>비즈니스에 맞는 플랜 선택</h2>
+          <p>사용량에 따라 유연하게 선택하세요</p>
+        </div>
+        <div class="pricing-grid">
+          <div class="pricing-card">
+            <div class="pricing-name">Starter</div>
+            <div class="pricing-desc">소규모 서비스에 적합</div>
+            <div class="pricing-price">
+              <span class="amount">무료</span>
+            </div>
+            <ul class="pricing-features">
+              <li>
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                월 1,000회 호출
+              </li>
+              <li>
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                기본 추천 API
+              </li>
+              <li>
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                이메일 지원
+              </li>
+            </ul>
+            <button class="pricing-btn secondary">시작하기</button>
+          </div>
+          <div class="pricing-card featured">
+            <div class="pricing-name">Pro</div>
+            <div class="pricing-desc">성장하는 서비스에 추천</div>
+            <div class="pricing-price">
+              <span class="amount">₩99,000</span>
+              <span class="period">/월</span>
+            </div>
+            <ul class="pricing-features">
+              <li>
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                월 50,000회 호출
+              </li>
+              <li>
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                전체 추천 API
+              </li>
+              <li>
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                우선 지원
+              </li>
+              <li>
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                사용량 대시보드
+              </li>
+            </ul>
+            <button class="pricing-btn primary">시작하기</button>
+          </div>
+          <div class="pricing-card">
+            <div class="pricing-name">Enterprise</div>
+            <div class="pricing-desc">대규모 서비스용</div>
+            <div class="pricing-price">
+              <span class="amount">문의</span>
+            </div>
+            <ul class="pricing-features">
+              <li>
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                무제한 호출
+              </li>
+              <li>
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                전용 인프라
+              </li>
+              <li>
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                SLA 보장
+              </li>
+              <li>
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                커스텀 모델 학습
+              </li>
+            </ul>
+            <button class="pricing-btn secondary">문의하기</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Use Cases Section -->
+    <section class="use-cases" id="use-cases">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-label">활용 사례</span>
+          <h2>다양한 서비스에 적용 가능</h2>
+          <p>무비서 API를 활용한 비즈니스 시나리오</p>
+        </div>
+        <div class="use-cases-grid">
+          <div class="use-case-card">
+            <div class="use-case-icon">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+              </svg>
+            </div>
+            <div class="use-case-content">
+              <h3>OTT 플랫폼</h3>
+              <p>자체 OTT 서비스에 AI 추천 기능을 추가하여 사용자 체류 시간과 만족도를 높이세요.</p>
+            </div>
+          </div>
+          <div class="use-case-card">
+            <div class="use-case-icon">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+              </svg>
+            </div>
+            <div class="use-case-content">
+              <h3>모바일 앱</h3>
+              <p>영화 관련 앱에 추천 기능을 탑재하여 사용자 경험을 향상시키세요.</p>
+            </div>
+          </div>
+          <div class="use-case-card">
+            <div class="use-case-icon">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+              </svg>
+            </div>
+            <div class="use-case-content">
+              <h3>챗봇 서비스</h3>
+              <p>대화형 AI에 영화 추천 기능을 연동하여 더 풍부한 서비스를 제공하세요.</p>
+            </div>
+          </div>
+          <div class="use-case-card">
+            <div class="use-case-icon">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
+              </svg>
+            </div>
+            <div class="use-case-content">
+              <h3>미디어/콘텐츠</h3>
+              <p>영화 리뷰 사이트, 블로그 등에서 맞춤 추천 콘텐츠를 자동 생성하세요.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact" id="contact">
+      <div class="container">
+        <h2>도입 문의</h2>
+        <p>무비서 API 도입에 대해 궁금한 점이 있으시면 연락주세요</p>
+        <div class="contact-info">
+          <div class="contact-item">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+            </svg>
+            contact@moviesir.cloud
+          </div>
+          <div class="contact-item">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+            </svg>
+            <a href="https://github.com/movigation" target="_blank" style="color: white;">GitHub</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <div class="container">
+        <div class="footer-left">
+          <span class="logo">무비서</span>
+          <span>by Team Movigation</span>
+        </div>
+        <div class="footer-links">
+          <a href="index.html">서비스 소개</a>
+          <a href="https://github.com/movigation" target="_blank">GitHub</a>
+          <span style="color: var(--text-muted);">© 2025</span>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // Smooth scroll
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute('href'));
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        });
+      });
+
+      // Navbar shadow on scroll
+      window.addEventListener('scroll', function () {
+        const nav = document.querySelector('nav');
+        if (window.scrollY > 50) {
+          nav.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.05)';
+        } else {
+          nav.style.boxShadow = 'none';
+        }
+      });
+
+      // Code tabs
+      document.querySelectorAll('.api-code-tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+          document.querySelectorAll('.api-code-tab').forEach(t => t.classList.remove('active'));
+          this.classList.add('active');
+        });
+      });
+    </script>
+  </body>
+</html>
