@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>회원가입 - 무비서 B2B Console</title>
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --bg-primary: #0f172a;
+        --bg-secondary: #1e293b;
+        --bg-card: #1e293b;
+        --accent: #3b82f6;
+        --accent-hover: #2563eb;
+        --text-primary: #f8fafc;
+        --text-secondary: #94a3b8;
+        --text-muted: #64748b;
+        --border: #334155;
+        --success: #10b981;
+        --error: #ef4444;
+      }
+
+      body {
+        font-family: "Noto Sans KR", sans-serif;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+      }
+
+      .signup-container {
+        width: 100%;
+        max-width: 480px;
+      }
+
+      .logo {
+        text-align: center;
+        margin-bottom: 32px;
+      }
+
+      .logo h1 {
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--text-primary);
+      }
+
+      .logo h1 span {
+        color: var(--accent);
+      }
+
+      .logo p {
+        color: var(--text-secondary);
+        font-size: 14px;
+        margin-top: 8px;
+      }
+
+      .signup-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 32px;
+      }
+
+      .signup-card h2 {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        text-align: center;
+      }
+
+      .signup-card .subtitle {
+        text-align: center;
+        color: var(--text-secondary);
+        font-size: 14px;
+        margin-bottom: 24px;
+      }
+
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .form-group label {
+        display: block;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text-secondary);
+        margin-bottom: 8px;
+      }
+
+      .form-group label .required {
+        color: var(--error);
+      }
+
+      .form-group input,
+      .form-group select {
+        width: 100%;
+        padding: 12px 16px;
+        font-size: 15px;
+        font-family: inherit;
+        background: var(--bg-primary);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        color: var(--text-primary);
+        transition: border-color 0.2s, box-shadow 0.2s;
+      }
+
+      .form-group input:focus,
+      .form-group select:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+      }
+
+      .form-group input::placeholder {
+        color: var(--text-muted);
+      }
+
+      .form-group small {
+        display: block;
+        margin-top: 6px;
+        font-size: 12px;
+        color: var(--text-muted);
+      }
+
+      .terms {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 24px;
+        font-size: 14px;
+        color: var(--text-secondary);
+      }
+
+      .terms input {
+        width: 18px;
+        height: 18px;
+        margin-top: 2px;
+        accent-color: var(--accent);
+        cursor: pointer;
+      }
+
+      .terms a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+
+      .terms a:hover {
+        text-decoration: underline;
+      }
+
+      .btn-signup {
+        width: 100%;
+        padding: 14px;
+        font-size: 16px;
+        font-weight: 600;
+        font-family: inherit;
+        background: var(--accent);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.2s, transform 0.1s;
+      }
+
+      .btn-signup:hover {
+        background: var(--accent-hover);
+      }
+
+      .btn-signup:active {
+        transform: scale(0.98);
+      }
+
+      .btn-signup:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .divider {
+        display: flex;
+        align-items: center;
+        margin: 24px 0;
+        color: var(--text-muted);
+        font-size: 13px;
+      }
+
+      .divider::before,
+      .divider::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: var(--border);
+      }
+
+      .divider span {
+        padding: 0 16px;
+      }
+
+      .login-link {
+        text-align: center;
+        font-size: 14px;
+        color: var(--text-secondary);
+      }
+
+      .login-link a {
+        color: var(--accent);
+        text-decoration: none;
+        font-weight: 500;
+      }
+
+      .login-link a:hover {
+        text-decoration: underline;
+      }
+
+      .back-link {
+        text-align: center;
+        margin-top: 24px;
+      }
+
+      .back-link a {
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: color 0.2s;
+      }
+
+      .back-link a:hover {
+        color: var(--text-secondary);
+      }
+
+      /* Plan Selection */
+      .plan-options {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-bottom: 24px;
+      }
+
+      .plan-option {
+        padding: 16px 12px;
+        background: var(--bg-primary);
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .plan-option:hover {
+        border-color: var(--accent);
+      }
+
+      .plan-option.selected {
+        border-color: var(--accent);
+        background: rgba(59, 130, 246, 0.1);
+      }
+
+      .plan-option .plan-name {
+        font-weight: 600;
+        font-size: 14px;
+        margin-bottom: 4px;
+      }
+
+      .plan-option .plan-price {
+        font-size: 12px;
+        color: var(--text-muted);
+      }
+
+      .plan-option.selected .plan-name {
+        color: var(--accent);
+      }
+
+      @media (max-width: 500px) {
+        .form-row {
+          grid-template-columns: 1fr;
+        }
+        .plan-options {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="signup-container">
+      <div class="logo">
+        <h1>무비서 <span>B2B</span></h1>
+        <p>AI 영화 추천 API</p>
+      </div>
+
+      <div class="signup-card">
+        <h2>무료로 시작하기</h2>
+        <p class="subtitle">1,000회 무료 API 호출로 시작하세요</p>
+
+        <form id="signupForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label>회사명 <span class="required">*</span></label>
+              <input type="text" id="company" placeholder="회사명" required />
+            </div>
+            <div class="form-group">
+              <label>담당자명 <span class="required">*</span></label>
+              <input type="text" id="name" placeholder="이름" required />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>업무용 이메일 <span class="required">*</span></label>
+            <input type="email" id="email" placeholder="company@example.com" required />
+          </div>
+
+          <div class="form-group">
+            <label>비밀번호 <span class="required">*</span></label>
+            <input type="password" id="password" placeholder="8자 이상" required minlength="8" />
+            <small>영문, 숫자를 포함한 8자 이상</small>
+          </div>
+
+          <div class="form-group">
+            <label>비밀번호 확인 <span class="required">*</span></label>
+            <input type="password" id="passwordConfirm" placeholder="비밀번호 재입력" required />
+          </div>
+
+          <div class="form-group">
+            <label>요금제 선택</label>
+          </div>
+          <div class="plan-options">
+            <div class="plan-option selected" data-plan="starter" onclick="selectPlan(this)">
+              <div class="plan-name">Starter</div>
+              <div class="plan-price">무료</div>
+            </div>
+            <div class="plan-option" data-plan="pro" onclick="selectPlan(this)">
+              <div class="plan-name">Pro</div>
+              <div class="plan-price">₩99,000/월</div>
+            </div>
+            <div class="plan-option" data-plan="enterprise" onclick="selectPlan(this)">
+              <div class="plan-name">Enterprise</div>
+              <div class="plan-price">문의</div>
+            </div>
+          </div>
+
+          <div class="terms">
+            <input type="checkbox" id="agreeTerms" required />
+            <label for="agreeTerms">
+              <a href="#">이용약관</a> 및 <a href="#">개인정보처리방침</a>에 동의합니다.
+            </label>
+          </div>
+
+          <button type="submit" class="btn-signup">계정 생성</button>
+        </form>
+
+        <div class="divider">
+          <span>또는</span>
+        </div>
+
+        <p class="login-link">
+          이미 계정이 있으신가요? <a href="login.html">로그인</a>
+        </p>
+      </div>
+
+      <div class="back-link">
+        <a href="../business.html">← 서비스 소개로 돌아가기</a>
+      </div>
+    </div>
+
+    <script>
+      let selectedPlan = 'starter';
+
+      function selectPlan(el) {
+        document.querySelectorAll('.plan-option').forEach(opt => opt.classList.remove('selected'));
+        el.classList.add('selected');
+        selectedPlan = el.dataset.plan;
+      }
+
+      document.getElementById('signupForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const password = document.getElementById('password').value;
+        const passwordConfirm = document.getElementById('passwordConfirm').value;
+
+        if (password !== passwordConfirm) {
+          alert('비밀번호가 일치하지 않습니다.');
+          return;
+        }
+
+        const company = document.getElementById('company').value;
+        const email = document.getElementById('email').value;
+
+        // Store demo session
+        localStorage.setItem('b2b_user', JSON.stringify({
+          email: email,
+          company: company,
+          plan: selectedPlan.charAt(0).toUpperCase() + selectedPlan.slice(1)
+        }));
+
+        alert('회원가입이 완료되었습니다!\n대시보드로 이동합니다.');
+        window.location.href = 'dashboard.html';
+      });
+    </script>
+  </body>
+</html>

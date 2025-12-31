@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>API Key 관리 - 무비서 B2B Console</title>
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --bg-primary: #0f172a;
+        --bg-secondary: #1e293b;
+        --bg-card: #1e293b;
+        --bg-hover: #334155;
+        --accent: #3b82f6;
+        --accent-hover: #2563eb;
+        --text-primary: #f8fafc;
+        --text-secondary: #94a3b8;
+        --text-muted: #64748b;
+        --border: #334155;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --error: #ef4444;
+      }
+
+      body {
+        font-family: "Noto Sans KR", sans-serif;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        min-height: 100vh;
+      }
+
+      .layout {
+        display: flex;
+        min-height: 100vh;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        width: 260px;
+        background: var(--bg-secondary);
+        border-right: 1px solid var(--border);
+        padding: 24px 0;
+        position: fixed;
+        height: 100vh;
+        overflow-y: auto;
+      }
+
+      .sidebar-logo {
+        padding: 0 24px 24px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 24px;
+      }
+
+      .sidebar-logo h1 {
+        font-size: 20px;
+        font-weight: 700;
+      }
+
+      .sidebar-logo h1 span {
+        color: var(--accent);
+      }
+
+      .sidebar-logo p {
+        font-size: 12px;
+        color: var(--text-muted);
+        margin-top: 4px;
+      }
+
+      .sidebar-nav {
+        list-style: none;
+      }
+
+      .sidebar-nav a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 24px;
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 14px;
+        transition: all 0.2s;
+      }
+
+      .sidebar-nav a:hover {
+        background: var(--bg-hover);
+        color: var(--text-primary);
+      }
+
+      .sidebar-nav a.active {
+        background: rgba(59, 130, 246, 0.1);
+        color: var(--accent);
+        border-right: 3px solid var(--accent);
+      }
+
+      .sidebar-nav .icon {
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .sidebar-section {
+        padding: 16px 24px 8px;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      /* Main Content */
+      .main {
+        flex: 1;
+        margin-left: 260px;
+      }
+
+      .header {
+        background: var(--bg-secondary);
+        border-bottom: 1px solid var(--border);
+        padding: 16px 32px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .header h2 {
+        font-size: 18px;
+        font-weight: 600;
+      }
+
+      .content {
+        padding: 32px;
+      }
+
+      /* Button */
+      .btn {
+        padding: 10px 20px;
+        font-size: 14px;
+        font-weight: 500;
+        font-family: inherit;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .btn-primary {
+        background: var(--accent);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: var(--accent-hover);
+      }
+
+      .btn-secondary {
+        background: var(--bg-hover);
+        color: var(--text-primary);
+        border: 1px solid var(--border);
+      }
+
+      .btn-secondary:hover {
+        border-color: var(--accent);
+      }
+
+      .btn-danger {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--error);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+      }
+
+      .btn-danger:hover {
+        background: rgba(239, 68, 68, 0.2);
+      }
+
+      .btn-sm {
+        padding: 6px 12px;
+        font-size: 13px;
+      }
+
+      /* Card */
+      .card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        margin-bottom: 24px;
+      }
+
+      .card-header {
+        padding: 20px 24px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .card-header h3 {
+        font-size: 16px;
+        font-weight: 600;
+      }
+
+      .card-body {
+        padding: 24px;
+      }
+
+      /* API Key Table */
+      .key-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .key-table th,
+      .key-table td {
+        text-align: left;
+        padding: 16px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .key-table th {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .key-table td {
+        font-size: 14px;
+      }
+
+      .key-table tr:last-child td {
+        border-bottom: none;
+      }
+
+      .key-table tr:hover td {
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      .key-value {
+        font-family: "JetBrains Mono", monospace;
+        background: var(--bg-primary);
+        padding: 6px 10px;
+        border-radius: 4px;
+        font-size: 13px;
+      }
+
+      .key-name {
+        font-weight: 500;
+      }
+
+      .key-name small {
+        display: block;
+        color: var(--text-muted);
+        font-weight: 400;
+        font-size: 12px;
+        margin-top: 4px;
+      }
+
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 500;
+      }
+
+      .status-active {
+        background: rgba(16, 185, 129, 0.1);
+        color: var(--success);
+      }
+
+      .status-inactive {
+        background: rgba(100, 116, 139, 0.2);
+        color: var(--text-muted);
+      }
+
+      .actions {
+        display: flex;
+        gap: 8px;
+      }
+
+      /* Info Box */
+      .info-box {
+        background: rgba(59, 130, 246, 0.1);
+        border: 1px solid rgba(59, 130, 246, 0.2);
+        border-radius: 8px;
+        padding: 16px 20px;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+      }
+
+      .info-box .icon {
+        font-size: 20px;
+      }
+
+      .info-box p {
+        font-size: 14px;
+        color: var(--text-secondary);
+        line-height: 1.6;
+      }
+
+      .info-box strong {
+        color: var(--text-primary);
+      }
+
+      /* Modal */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 100;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal-overlay.active {
+        display: flex;
+      }
+
+      .modal {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        width: 100%;
+        max-width: 500px;
+        padding: 24px;
+      }
+
+      .modal h3 {
+        font-size: 18px;
+        margin-bottom: 16px;
+      }
+
+      .modal .form-group {
+        margin-bottom: 16px;
+      }
+
+      .modal label {
+        display: block;
+        font-size: 14px;
+        color: var(--text-secondary);
+        margin-bottom: 8px;
+      }
+
+      .modal input {
+        width: 100%;
+        padding: 12px 16px;
+        font-size: 14px;
+        font-family: inherit;
+        background: var(--bg-primary);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        color: var(--text-primary);
+      }
+
+      .modal input:focus {
+        outline: none;
+        border-color: var(--accent);
+      }
+
+      .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-top: 24px;
+      }
+
+      .new-key-display {
+        background: var(--bg-primary);
+        border: 1px solid var(--success);
+        border-radius: 8px;
+        padding: 16px;
+        margin: 16px 0;
+      }
+
+      .new-key-display p {
+        font-size: 13px;
+        color: var(--text-secondary);
+        margin-bottom: 8px;
+      }
+
+      .new-key-display code {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 14px;
+        color: var(--success);
+        word-break: break-all;
+      }
+
+      .warning-text {
+        font-size: 13px;
+        color: var(--warning);
+        margin-top: 12px;
+      }
+
+      @media (max-width: 768px) {
+        .sidebar {
+          display: none;
+        }
+        .main {
+          margin-left: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="layout">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-logo">
+          <h1>무비서 <span>B2B</span></h1>
+          <p>Console</p>
+        </div>
+
+        <nav>
+          <ul class="sidebar-nav">
+            <li>
+              <a href="dashboard.html">
+                <span class="icon">📊</span>
+                대시보드
+              </a>
+            </li>
+            <li>
+              <a href="api-keys.html" class="active">
+                <span class="icon">🔑</span>
+                API Key 관리
+              </a>
+            </li>
+            <li>
+              <a href="usage.html">
+                <span class="icon">📈</span>
+                사용량 리포트
+              </a>
+            </li>
+            <li>
+              <a href="playground.html">
+                <span class="icon">🧪</span>
+                API Playground
+              </a>
+            </li>
+          </ul>
+
+          <div class="sidebar-section">설정</div>
+          <ul class="sidebar-nav">
+            <li>
+              <a href="#">
+                <span class="icon">⚙️</span>
+                계정 설정
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <span class="icon">📄</span>
+                API 문서
+              </a>
+            </li>
+            <li>
+              <a href="#" id="logoutBtn">
+                <span class="icon">🚪</span>
+                로그아웃
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main">
+        <header class="header">
+          <h2>API Key 관리</h2>
+          <button class="btn btn-primary" onclick="openCreateModal()">
+            + 새 API Key 발급
+          </button>
+        </header>
+
+        <div class="content">
+          <div class="info-box">
+            <span class="icon">💡</span>
+            <p>
+              <strong>API Key는 안전하게 보관하세요.</strong><br />
+              API Key가 노출되면 즉시 비활성화하고 새로 발급받으세요.
+              Key는 서버 환경변수에 저장하고, 클라이언트 코드에 직접 포함하지 마세요.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3>API Keys</h3>
+              <span style="color: var(--text-muted); font-size: 14px;">총 2개</span>
+            </div>
+            <div class="card-body" style="padding: 0;">
+              <table class="key-table">
+                <thead>
+                  <tr>
+                    <th>이름</th>
+                    <th>API Key</th>
+                    <th>상태</th>
+                    <th>생성일</th>
+                    <th>마지막 사용</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <div class="key-name">
+                        Production
+                        <small>메인 서비스용</small>
+                      </div>
+                    </td>
+                    <td><code class="key-value">sk-moviesir-prod-****-****</code></td>
+                    <td><span class="status-badge status-active">● 활성</span></td>
+                    <td>2024-01-15</td>
+                    <td>방금 전</td>
+                    <td>
+                      <div class="actions">
+                        <button class="btn btn-secondary btn-sm" onclick="copyKey('sk-moviesir-prod-abcd-1234-efgh-5678')">복사</button>
+                        <button class="btn btn-danger btn-sm">비활성화</button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div class="key-name">
+                        Development
+                        <small>테스트 환경용</small>
+                      </div>
+                    </td>
+                    <td><code class="key-value">sk-moviesir-dev-****-****</code></td>
+                    <td><span class="status-badge status-active">● 활성</span></td>
+                    <td>2024-01-20</td>
+                    <td>2시간 전</td>
+                    <td>
+                      <div class="actions">
+                        <button class="btn btn-secondary btn-sm" onclick="copyKey('sk-moviesir-dev-wxyz-9876-ijkl-5432')">복사</button>
+                        <button class="btn btn-danger btn-sm">비활성화</button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Create Key Modal -->
+    <div class="modal-overlay" id="createModal">
+      <div class="modal">
+        <h3>새 API Key 발급</h3>
+        <div class="form-group">
+          <label>Key 이름</label>
+          <input type="text" id="keyName" placeholder="예: Production, Development" />
+        </div>
+        <div class="form-group">
+          <label>설명 (선택)</label>
+          <input type="text" id="keyDesc" placeholder="이 Key의 용도를 입력하세요" />
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-secondary" onclick="closeCreateModal()">취소</button>
+          <button class="btn btn-primary" onclick="createKey()">발급하기</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- New Key Display Modal -->
+    <div class="modal-overlay" id="newKeyModal">
+      <div class="modal">
+        <h3>API Key 발급 완료</h3>
+        <div class="new-key-display">
+          <p>새로 발급된 API Key:</p>
+          <code id="newKeyValue">sk-moviesir-xxxx-xxxx-xxxx-xxxxxxxxxxxx</code>
+        </div>
+        <p class="warning-text">
+          ⚠️ 이 Key는 다시 확인할 수 없습니다. 지금 바로 복사해서 안전한 곳에 저장하세요.
+        </p>
+        <div class="modal-actions">
+          <button class="btn btn-primary" onclick="copyNewKey()">복사하기</button>
+          <button class="btn btn-secondary" onclick="closeNewKeyModal()">확인</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Check login
+      const user = JSON.parse(localStorage.getItem('b2b_user'));
+      if (!user) {
+        window.location.href = 'login.html';
+      }
+
+      // Modal functions
+      function openCreateModal() {
+        document.getElementById('createModal').classList.add('active');
+      }
+
+      function closeCreateModal() {
+        document.getElementById('createModal').classList.remove('active');
+      }
+
+      function closeNewKeyModal() {
+        document.getElementById('newKeyModal').classList.remove('active');
+        location.reload();
+      }
+
+      function createKey() {
+        const name = document.getElementById('keyName').value;
+        if (!name) {
+          alert('Key 이름을 입력해주세요.');
+          return;
+        }
+
+        // Generate fake key
+        const newKey = 'sk-moviesir-' + name.toLowerCase().substring(0, 4) + '-' +
+                       Math.random().toString(36).substring(2, 6) + '-' +
+                       Math.random().toString(36).substring(2, 6) + '-' +
+                       Math.random().toString(36).substring(2, 14);
+
+        document.getElementById('newKeyValue').textContent = newKey;
+        closeCreateModal();
+        document.getElementById('newKeyModal').classList.add('active');
+      }
+
+      function copyKey(key) {
+        navigator.clipboard.writeText(key).then(() => {
+          alert('API Key가 클립보드에 복사되었습니다.');
+        });
+      }
+
+      function copyNewKey() {
+        const key = document.getElementById('newKeyValue').textContent;
+        navigator.clipboard.writeText(key).then(() => {
+          alert('API Key가 클립보드에 복사되었습니다.\n안전한 곳에 저장하세요!');
+        });
+      }
+
+      // Logout
+      document.getElementById('logoutBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        localStorage.removeItem('b2b_user');
+        window.location.href = 'login.html';
+      });
+
+      // Close modal on overlay click
+      document.querySelectorAll('.modal-overlay').forEach(overlay => {
+        overlay.addEventListener('click', function(e) {
+          if (e.target === this) {
+            this.classList.remove('active');
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

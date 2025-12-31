@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>API Playground - 무비서 B2B Console</title>
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --bg-primary: #0f172a;
+        --bg-secondary: #1e293b;
+        --bg-card: #1e293b;
+        --bg-hover: #334155;
+        --bg-code: #0d1117;
+        --accent: #3b82f6;
+        --accent-hover: #2563eb;
+        --text-primary: #f8fafc;
+        --text-secondary: #94a3b8;
+        --text-muted: #64748b;
+        --border: #334155;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --error: #ef4444;
+      }
+
+      body {
+        font-family: "Noto Sans KR", sans-serif;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        min-height: 100vh;
+      }
+
+      .layout {
+        display: flex;
+        min-height: 100vh;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        width: 260px;
+        background: var(--bg-secondary);
+        border-right: 1px solid var(--border);
+        padding: 24px 0;
+        position: fixed;
+        height: 100vh;
+        overflow-y: auto;
+      }
+
+      .sidebar-logo {
+        padding: 0 24px 24px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 24px;
+      }
+
+      .sidebar-logo h1 {
+        font-size: 20px;
+        font-weight: 700;
+      }
+
+      .sidebar-logo h1 span {
+        color: var(--accent);
+      }
+
+      .sidebar-logo p {
+        font-size: 12px;
+        color: var(--text-muted);
+        margin-top: 4px;
+      }
+
+      .sidebar-nav {
+        list-style: none;
+      }
+
+      .sidebar-nav a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 24px;
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 14px;
+        transition: all 0.2s;
+      }
+
+      .sidebar-nav a:hover {
+        background: var(--bg-hover);
+        color: var(--text-primary);
+      }
+
+      .sidebar-nav a.active {
+        background: rgba(59, 130, 246, 0.1);
+        color: var(--accent);
+        border-right: 3px solid var(--accent);
+      }
+
+      .sidebar-nav .icon {
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .sidebar-section {
+        padding: 16px 24px 8px;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      /* Main Content */
+      .main {
+        flex: 1;
+        margin-left: 260px;
+      }
+
+      .header {
+        background: var(--bg-secondary);
+        border-bottom: 1px solid var(--border);
+        padding: 16px 32px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .header h2 {
+        font-size: 18px;
+        font-weight: 600;
+      }
+
+      .content {
+        padding: 32px;
+      }
+
+      /* Playground Layout */
+      .playground-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+      }
+
+      .panel {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .panel-header {
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .panel-header h3 {
+        font-size: 14px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .panel-body {
+        padding: 20px;
+        flex: 1;
+      }
+
+      /* Form */
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .form-group label {
+        display: block;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text-secondary);
+        margin-bottom: 8px;
+      }
+
+      .form-group input,
+      .form-group select {
+        width: 100%;
+        padding: 10px 14px;
+        font-size: 14px;
+        font-family: inherit;
+        background: var(--bg-primary);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        color: var(--text-primary);
+      }
+
+      .form-group input:focus,
+      .form-group select:focus {
+        outline: none;
+        border-color: var(--accent);
+      }
+
+      .checkbox-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .checkbox-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        background: var(--bg-primary);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .checkbox-item:has(input:checked) {
+        border-color: var(--accent);
+        background: rgba(59, 130, 246, 0.1);
+      }
+
+      .checkbox-item input {
+        width: 14px;
+        height: 14px;
+        accent-color: var(--accent);
+      }
+
+      /* Button */
+      .btn {
+        padding: 12px 24px;
+        font-size: 14px;
+        font-weight: 600;
+        font-family: inherit;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .btn-primary {
+        background: var(--accent);
+        color: white;
+        width: 100%;
+        justify-content: center;
+      }
+
+      .btn-primary:hover {
+        background: var(--accent-hover);
+      }
+
+      .btn-primary:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .btn-sm {
+        padding: 6px 12px;
+        font-size: 12px;
+      }
+
+      /* Code Block */
+      .code-block {
+        background: var(--bg-code);
+        border-radius: 8px;
+        overflow: hidden;
+        height: 100%;
+        min-height: 400px;
+      }
+
+      .code-header {
+        background: var(--bg-hover);
+        padding: 8px 16px;
+        font-size: 12px;
+        color: var(--text-muted);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .code-content {
+        padding: 16px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13px;
+        line-height: 1.6;
+        overflow: auto;
+        max-height: 360px;
+      }
+
+      .code-content pre {
+        margin: 0;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      /* Syntax Highlighting */
+      .json-key {
+        color: #79c0ff;
+      }
+
+      .json-string {
+        color: #a5d6ff;
+      }
+
+      .json-number {
+        color: #56d364;
+      }
+
+      .json-boolean {
+        color: #ff7b72;
+      }
+
+      /* Response Status */
+      .status-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 500;
+      }
+
+      .status-success {
+        background: rgba(16, 185, 129, 0.1);
+        color: var(--success);
+      }
+
+      .status-error {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--error);
+      }
+
+      .status-pending {
+        background: rgba(100, 116, 139, 0.2);
+        color: var(--text-muted);
+      }
+
+      /* Movie Card Preview */
+      .movie-preview {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 16px;
+        margin-top: 20px;
+      }
+
+      .movie-card {
+        background: var(--bg-primary);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        overflow: hidden;
+      }
+
+      .movie-card img {
+        width: 100%;
+        aspect-ratio: 2/3;
+        object-fit: cover;
+        background: var(--bg-hover);
+      }
+
+      .movie-card .info {
+        padding: 10px;
+      }
+
+      .movie-card .title {
+        font-size: 13px;
+        font-weight: 500;
+        margin-bottom: 4px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .movie-card .meta {
+        font-size: 11px;
+        color: var(--text-muted);
+      }
+
+      /* Response time */
+      .response-meta {
+        display: flex;
+        gap: 16px;
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid var(--border);
+        font-size: 12px;
+        color: var(--text-muted);
+      }
+
+      .response-meta span {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      @media (max-width: 1200px) {
+        .playground-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .sidebar {
+          display: none;
+        }
+        .main {
+          margin-left: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="layout">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-logo">
+          <h1>무비서 <span>B2B</span></h1>
+          <p>Console</p>
+        </div>
+
+        <nav>
+          <ul class="sidebar-nav">
+            <li>
+              <a href="dashboard.html">
+                <span class="icon">📊</span>
+                대시보드
+              </a>
+            </li>
+            <li>
+              <a href="api-keys.html">
+                <span class="icon">🔑</span>
+                API Key 관리
+              </a>
+            </li>
+            <li>
+              <a href="usage.html">
+                <span class="icon">📈</span>
+                사용량 리포트
+              </a>
+            </li>
+            <li>
+              <a href="playground.html" class="active">
+                <span class="icon">🧪</span>
+                API Playground
+              </a>
+            </li>
+          </ul>
+
+          <div class="sidebar-section">설정</div>
+          <ul class="sidebar-nav">
+            <li>
+              <a href="#">
+                <span class="icon">⚙️</span>
+                계정 설정
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <span class="icon">📄</span>
+                API 문서
+              </a>
+            </li>
+            <li>
+              <a href="#" id="logoutBtn">
+                <span class="icon">🚪</span>
+                로그아웃
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main">
+        <header class="header">
+          <h2>API Playground</h2>
+          <span class="status-indicator status-pending" id="statusIndicator">
+            대기 중
+          </span>
+        </header>
+
+        <div class="content">
+          <div class="playground-grid">
+            <!-- Request Panel -->
+            <div class="panel">
+              <div class="panel-header">
+                <h3>📤 Request</h3>
+                <code style="font-size: 12px; color: var(--accent);">POST /api/b2b/recommend</code>
+              </div>
+              <div class="panel-body">
+                <div class="form-group">
+                  <label>시간 제한 (분)</label>
+                  <select id="runtimeLimit">
+                    <option value="60">1시간</option>
+                    <option value="90">1시간 30분</option>
+                    <option value="120" selected>2시간</option>
+                    <option value="150">2시간 30분</option>
+                    <option value="180">3시간</option>
+                    <option value="240">4시간 이상</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label>장르 선택</label>
+                  <div class="checkbox-group">
+                    <label class="checkbox-item">
+                      <input type="checkbox" name="genre" value="액션" checked />
+                      액션
+                    </label>
+                    <label class="checkbox-item">
+                      <input type="checkbox" name="genre" value="드라마" />
+                      드라마
+                    </label>
+                    <label class="checkbox-item">
+                      <input type="checkbox" name="genre" value="코미디" />
+                      코미디
+                    </label>
+                    <label class="checkbox-item">
+                      <input type="checkbox" name="genre" value="SF" />
+                      SF
+                    </label>
+                    <label class="checkbox-item">
+                      <input type="checkbox" name="genre" value="로맨스" />
+                      로맨스
+                    </label>
+                    <label class="checkbox-item">
+                      <input type="checkbox" name="genre" value="스릴러" />
+                      스릴러
+                    </label>
+                    <label class="checkbox-item">
+                      <input type="checkbox" name="genre" value="공포" />
+                      공포
+                    </label>
+                    <label class="checkbox-item">
+                      <input type="checkbox" name="genre" value="애니메이션" />
+                      애니메이션
+                    </label>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label>
+                    <input type="checkbox" id="excludeAdult" checked style="margin-right: 6px;" />
+                    성인 콘텐츠 제외
+                  </label>
+                </div>
+
+                <button class="btn btn-primary" id="sendBtn" onclick="sendRequest()">
+                  🚀 API 호출
+                </button>
+              </div>
+            </div>
+
+            <!-- Response Panel -->
+            <div class="panel">
+              <div class="panel-header">
+                <h3>📥 Response</h3>
+                <button class="btn btn-sm" style="background: var(--bg-hover); color: var(--text-secondary);" onclick="copyResponse()">
+                  복사
+                </button>
+              </div>
+              <div class="panel-body" style="padding: 0;">
+                <div class="code-block">
+                  <div class="code-header">
+                    <span>application/json</span>
+                    <span id="responseTime"></span>
+                  </div>
+                  <div class="code-content">
+                    <pre id="responseBody">{
+  <span class="json-key">"message"</span>: <span class="json-string">"파라미터를 설정하고 API 호출 버튼을 클릭하세요"</span>
+}</pre>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Movie Preview -->
+          <div class="panel" style="margin-top: 24px;">
+            <div class="panel-header">
+              <h3>🎬 추천 결과 미리보기</h3>
+            </div>
+            <div class="panel-body">
+              <div class="movie-preview" id="moviePreview">
+                <p style="color: var(--text-muted); font-size: 14px;">API 호출 후 추천된 영화가 여기에 표시됩니다.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      // Check login
+      const user = JSON.parse(localStorage.getItem('b2b_user'));
+      if (!user) {
+        window.location.href = 'login.html';
+      }
+
+      // Mock movie data
+      const mockMovies = [
+        { id: 1, title: "어벤져스: 엔드게임", year: 2019, rating: 8.4, poster: "https://image.tmdb.org/t/p/w300/or06FN3Dka5tukK1e9sl16pB3iy.jpg" },
+        { id: 2, title: "인터스텔라", year: 2014, rating: 8.6, poster: "https://image.tmdb.org/t/p/w300/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg" },
+        { id: 3, title: "다크 나이트", year: 2008, rating: 9.0, poster: "https://image.tmdb.org/t/p/w300/qJ2tW6WMUDux911r6m7haRef0WH.jpg" },
+        { id: 4, title: "인셉션", year: 2010, rating: 8.8, poster: "https://image.tmdb.org/t/p/w300/9gk7adHYeDvHkCSEqAvQNLV5Ber.jpg" },
+        { id: 5, title: "매트릭스", year: 1999, rating: 8.7, poster: "https://image.tmdb.org/t/p/w300/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg" },
+        { id: 6, title: "글래디에이터", year: 2000, rating: 8.5, poster: "https://image.tmdb.org/t/p/w300/ty8TGRuvJLPUmAR1H1nRIsgwvim.jpg" },
+      ];
+
+      function sendRequest() {
+        const btn = document.getElementById('sendBtn');
+        const status = document.getElementById('statusIndicator');
+
+        btn.disabled = true;
+        btn.innerHTML = '⏳ 요청 중...';
+        status.className = 'status-indicator status-pending';
+        status.textContent = '요청 중...';
+
+        // Get selected genres
+        const genres = Array.from(document.querySelectorAll('input[name="genre"]:checked'))
+          .map(cb => cb.value);
+
+        const requestData = {
+          runtime_limit: parseInt(document.getElementById('runtimeLimit').value),
+          genres: genres,
+          exclude_adult: document.getElementById('excludeAdult').checked
+        };
+
+        // Simulate API call
+        const startTime = Date.now();
+
+        setTimeout(() => {
+          const responseTime = Math.floor(Math.random() * 50) + 60; // 60-110ms
+
+          // Mock response
+          const response = {
+            success: true,
+            data: {
+              track_a: {
+                label: "AI 추천",
+                movies: mockMovies.slice(0, 3).map(m => ({
+                  tmdb_id: m.id,
+                  title: m.title,
+                  release_year: m.year,
+                  rating: m.rating,
+                  poster_url: m.poster,
+                  runtime: Math.floor(Math.random() * 60) + 90
+                }))
+              },
+              track_b: {
+                label: "인기 영화",
+                movies: mockMovies.slice(3, 6).map(m => ({
+                  tmdb_id: m.id,
+                  title: m.title,
+                  release_year: m.year,
+                  rating: m.rating,
+                  poster_url: m.poster,
+                  runtime: Math.floor(Math.random() * 60) + 90
+                }))
+              }
+            },
+            meta: {
+              request_id: "req_" + Math.random().toString(36).substring(2, 10),
+              processing_time_ms: responseTime
+            }
+          };
+
+          // Update UI
+          document.getElementById('responseTime').textContent = responseTime + 'ms';
+          document.getElementById('responseBody').innerHTML = syntaxHighlight(JSON.stringify(response, null, 2));
+
+          status.className = 'status-indicator status-success';
+          status.textContent = '200 OK';
+
+          // Show movie preview
+          const preview = document.getElementById('moviePreview');
+          preview.innerHTML = response.data.track_a.movies.concat(response.data.track_b.movies)
+            .map(m => `
+              <div class="movie-card">
+                <img src="${m.poster_url}" alt="${m.title}" onerror="this.style.background='var(--bg-hover)'" />
+                <div class="info">
+                  <div class="title">${m.title}</div>
+                  <div class="meta">${m.release_year} · ⭐ ${m.rating}</div>
+                </div>
+              </div>
+            `).join('');
+
+          btn.disabled = false;
+          btn.innerHTML = '🚀 API 호출';
+        }, 800);
+      }
+
+      function syntaxHighlight(json) {
+        json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+          let cls = 'json-number';
+          if (/^"/.test(match)) {
+            if (/:$/.test(match)) {
+              cls = 'json-key';
+            } else {
+              cls = 'json-string';
+            }
+          } else if (/true|false/.test(match)) {
+            cls = 'json-boolean';
+          }
+          return '<span class="' + cls + '">' + match + '</span>';
+        });
+      }
+
+      function copyResponse() {
+        const response = document.getElementById('responseBody').textContent;
+        navigator.clipboard.writeText(response).then(() => {
+          alert('응답이 클립보드에 복사되었습니다.');
+        });
+      }
+
+      // Logout
+      document.getElementById('logoutBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        localStorage.removeItem('b2b_user');
+        window.location.href = 'login.html';
+      });
+    </script>
+  </body>
+</html>
